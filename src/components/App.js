@@ -11,7 +11,7 @@ class App extends Component {
 
     this.handleNameChange = this.handleNameChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    
+
     this.state = {
       vehicles: [],
       value: "",
@@ -26,7 +26,7 @@ class App extends Component {
   // See form lesson for details.
   // Enter your code below:
   handleNameChange(event) {
-    this.setState({pilot: event.target.value})
+    this.setState({value: event.target.value})
   }
 
 
@@ -37,7 +37,8 @@ class App extends Component {
   // Then, set the value of the input back to an empty string.
   // Enter your code below:
   handleSubmit(event) {
-    this.setState({pilot: event.target.value})
+    event.preventDefault();
+    this.setState({pilot: this.state.value})
   }
 
 
@@ -48,7 +49,33 @@ class App extends Component {
   // In your response look for 'results'. It should return this array.
   // You will want to use this array when you set the state of 'vehicles'. You will need this data in your render.
   // Enter your code below:
-
+  componentDidMount() {
+    fetch('https://swapi.co/api/vehicles/')
+    .then(resp => resp.json())
+    .then(resp => {
+      let newVehicles = resp.results.map(v => {
+        return (
+          <div className="card">
+            <h4>Vehicle: {v.name}</h4>
+            <h5>Model: {v.model}</h5>
+            <div className="vehicle-specs">
+              <h6>Specs</h6>
+              <ul>
+                <li>Manufacturer: {v.manufacturer}</li>
+                <li>Class: {v.vehicle_class}</li>
+                <li>Passengers: {v.passengers}</li>
+                <li>Crew: {v.crew}</li>
+                <li>Length: {v.length}</li>
+                <li>Speed: {v.max_atmosphering_speed}</li>
+                <li>Cargo Capacity: {v.cargo_capacity}</li>
+              </ul>
+            </div>
+          </div>
+        )
+      })
+      this.setState({vehicles: newVehicles})
+    })
+  }
 
   // RENDER
   // Before you can map over the data you've fetched, you will first need to store that 'state' in a variable.
@@ -83,6 +110,9 @@ class App extends Component {
             <input type="text" name="pilot-input" value={this.state.name} onChange={this.handleNameChange} placeholder="Pilots Name" />
             <input type="submit" value="submit" />
           </form>
+          <h2>
+            {this.state.pilot}
+          </h2>
         </div>
         <div className="vehicle-cards">
           {this.state.vehicles}
